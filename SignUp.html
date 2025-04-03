@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <script type="module" src="register.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            width: 850px;
+            height: 450px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        .left {
+            width: 50%;
+            background: linear-gradient(to right, #1E3C72, #2A5298);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+        .left h2 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+        .left p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .left button {
+            background-color: white;
+            color: #2A5298;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            padding: 40px;
+        }
+        .form-container {
+            text-align: center;
+            width: 100%;
+        }
+        .form-container h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .social-icons img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background-color: white;
+        }
+        .form-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .form-container button {
+            background-color: #2A5298;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: -8px;
+            margin-bottom: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h2>Hello, Friend!</h2>
+            <p>Register with your details to use all of site features</p>
+            <a href="Login.html">
+                <button>SIGN IN</button>
+            </a>
+        </div>
+        <div class="right">
+            <div class="form-container">
+                <h2>Create Account</h2>
+                <div class="social-icons">
+                    <img src="GOOGLEIMAGE.png" alt="Google">
+                    <img src="LINKDEIN.webp" alt="LinkedIn">
+                </div>
+                <p>or use your email for registration</p>
+                <input type="text" id="name" placeholder="Name">
+                <input type="email" id="email" placeholder="Email">
+                <p class="error" id="emailError">Invalid email format</p>
+                <input type="password" id="password" placeholder="Password">
+                <p class="error" id="passwordError">Password must be at least 6 characters</p>
+                <button id="signup-btn">SIGN UP</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let emailInput = document.getElementById("email");
+            let passwordInput = document.getElementById("password");
+            emailInput.addEventListener("blur", validateEmail);
+            passwordInput.addEventListener("blur", validatePassword);
+        });
+
+        function validateEmail() {
+            let email = document.getElementById("email").value;
+            let emailError = document.getElementById("emailError");
+            let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+            emailError.style.display = emailPattern.test(email) ? "none" : "block";
+            return emailPattern.test(email);
+        }
+
+        function validatePassword() {
+            let password = document.getElementById("password").value;
+            let passwordError = document.getElementById("passwordError");
+    
+            passwordError.style.display = password.length < 6 ? "block" : "none";
+            return password.length >= 6;
+        }
+
+        async function registerUser() {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (!validateEmail() || !validatePassword()) return;
+
+            try {
+                const response = await fetch("http://localhost:60573/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+                response.ok ? alert("Registration successful!") || (window.location.href = "Login.html") : alert(data.message || "Registration failed.");
+            } catch (error) {
+                alert("Error connecting to server.");
+            }
+        }
+
+        document.getElementById("signup-btn").addEventListener("click", registerUser);
+        document.getElementById("password").addEventListener("keypress", (event) => event.key === "Enter" && registerUser());
+    </script>
+</body>
+</html>
